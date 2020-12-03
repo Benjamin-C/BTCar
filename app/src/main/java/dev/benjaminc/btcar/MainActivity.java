@@ -135,6 +135,14 @@ public class MainActivity extends AppCompatActivity {
                         // Subtract location from start to not invert axis so that the right is high and left is low
                         float speed = ((startY - clamp(event.getY(), 0, height)) * sensitivityBar.getProgress() / 100) / (height / 2);
 
+                        /*
+                         * Calculate the L and R motor speeds to send to the device
+                         * Turning is controlled by the horizontal positoin of the touch.
+                         * The edges run one motor forward and the other motor backward.
+                         * 1/4 and 3/4 run one motor and stop the other motor
+                         * 1/2 runs both motors together
+                         * Ratio of power is controlled lineraly by position
+                         */
                         l = (int) ((clamp(dx, -510, 0) + 255) * speed);
                         r = (int) ((255 - (clamp(dx, 0, 510))) * speed);
 
@@ -153,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
                 if(lastL != l || lastR != r) {
                     lastL = l;
                     lastR = r;
+                    // The magic code to send to the arduino
                     String msg = "l" + ((l < 0) ? "-" : "+") + String.format("%02X", (int) abs(l)) + "\nr" + ((r < 0) ? "-" : "+") + String.format("%02X", (int) abs(r)) + "\n";
                     sendData(msg);
                     debug[2].setText(msg);
