@@ -100,10 +100,14 @@ public class MainActivity extends AppCompatActivity {
         scanButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    scanButton.setText("Connecting ...");
-                    statusView.setText("Connecting ...");
-                    findBT();
-                    openBT();
+                    if(lightButton.isEnabled()) {
+                        closeBT();
+                    } else {
+                        scanButton.setText("Connecting ...");
+                        statusView.setText("Connecting ...");
+                        findBT();
+                        openBT();
+                    }
                 }
                 catch (IOException ex) { }
             }
@@ -143,8 +147,8 @@ public class MainActivity extends AppCompatActivity {
                          * 1/2 runs both motors together
                          * Ratio of power is controlled lineraly by position
                          */
-                        l = (int) ((clamp(dx, -510, 0) + 255) * speed);
-                        r = (int) ((255 - (clamp(dx, 0, 510))) * speed);
+                        r = (int) ((clamp(dx, -510, 0) + 255) * speed);
+                        l = (int) ((255 - (clamp(dx, 0, 510))) * speed);
 
                         debug[0].setText("l: " + l);
                         debug[1].setText("r: " + r);
@@ -300,5 +304,6 @@ public class MainActivity extends AppCompatActivity {
         mmInputStream.close();
         mmSocket.close();
         statusView.setText("Bluetooth Closed");
+        disable();
     }
 }
